@@ -27,4 +27,4 @@ Gathering 100 images of data at first with some data augmentation, then continue
 
 - Tensorflow for model archetcture
 
->>>>>>> 769d111004eac4a603808928b0dc3f376a22278f
+>>>>>>> # Combiner-GANS
