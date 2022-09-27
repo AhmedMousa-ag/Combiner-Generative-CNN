@@ -6,15 +6,17 @@ from keras.layers import Conv2D, MaxPool2D, Conv2DTranspose
 
 class model(tf_builder):
     """This model is a simple autoencoder as our base model"""
-    def __init__(slef, *args, **kwargs):
+
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._build_model()
 
     def _build_model(self):
         self.model = keras.models.Sequential(
-            [self.encoder(self.pic_shape), self.decoder(self.pic_shape)])
-        self.model._compile()
+            [self._encoder(self.pic_shape), self._decoder()])
+        self._compile()
 
-    def _encoder(input_shape):
+    def _encoder(self,input_shape):
         encoder = keras.models.Sequential()
 
         encoder.add(Conv2D(16, kernel_size=3, padding='same',
@@ -39,7 +41,7 @@ class model(tf_builder):
 
         return encoder
 
-    def _decoder(pic_shape):
+    def _decoder(self):
         decoder = keras.models.Sequential()
 
         decoder.add(Conv2DTranspose(64*2, kernel_size=3, strides=2, padding='valid',
