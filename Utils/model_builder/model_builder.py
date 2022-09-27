@@ -1,5 +1,5 @@
 class model_builder():
-    def __init__(self, loss_func, optimizer, metrics,pic_shape=[344,344]):
+    def __init__(self, loss_func, optimizer, metrics, pic_shape=[344, 344]):
         self.loss = loss_func
         self.optimizer = optimizer
         self.metrics = metrics

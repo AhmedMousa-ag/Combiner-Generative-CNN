@@ -1,4 +1,4 @@
-from tensorflow_builder import tf_builder
+from ..tensorflow_builder import tf_builder
 import tensorflow as tf
 from tensorflow import keras
 from keras.layers import Conv2D, MaxPool2D, Conv2DTranspose
@@ -7,7 +7,7 @@ from keras.layers import Conv2D, MaxPool2D, Conv2DTranspose
 class model(tf_builder):
     """This model is a simple autoencoder as our base model"""
     def __init__(slef, *args, **kwargs):
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _build_model(self):
         self.model = keras.models.Sequential(
