@@ -3,4 +3,16 @@ paths:
 
 
 data_versions:
-  -"4-09-22"
+  - 
+  - "4-09-22"
+
+
+train_config:
+  loss: 'msa'
+  metric: 'mae'
+  epochs: 500 # I will make it long enough and we have early stop
+  earl_stop: 50
+  lr_reduce_pati: 10
+
+mlflow:
+  track_uri: "http://127.0.0.1:5000"

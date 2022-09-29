@@ -19,7 +19,7 @@ def scale_pic(x_img, y_img):
     y_img = y_img / 255.
 
 
-def load_x_y_images(img_path, origin_path, image_size=(320, 320)):
+def load_x_y_images(img_path, origin_path, image_size=(320, 320), add_augmentation=True):
     images = tf.keras.utils.image_dataset_from_directory(
         img_path, image_size=image_size, label_mode=None)
     org_img = tf.keras.utils.image_dataset_from_directory(
@@ -28,14 +28,26 @@ def load_x_y_images(img_path, origin_path, image_size=(320, 320)):
     for _ in images:
         org_img = org_img.concatenate(org_img)
 
-    return tf.data.Dataset.zip((images, org_img))
+    dataset = tf.data.Dataset.zip((images, org_img))
+
+    if add_augmentation:
+        augmented_set = dataset.map(augment_images)
+        dataset = dataset.concatenate(augmented_set)
+
+    return dataset
 
 
-def load_x_images(img_path, origin_path, image_size=(320, 320)):
+def load_x_images(img_path, image_size=(320, 320), add_augmentation=True):
     images = tf.keras.utils.image_dataset_from_directory(
         img_path, image_size=image_size, label_mode=None)
 
-    return tf.data.Dataset.zip((images, images))
+    dataset = tf.data.Dataset.zip((images, images))
+
+    if add_augmentation:
+        augmented_set = dataset.map(augment_images)
+        dataset = dataset.concatenate(augmented_set)
+
+    return dataset
 
 
 def load_test_image(img_path, pic_shape):
