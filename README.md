@@ -24,5 +24,6 @@ So will continue gathering data and move with GANs arch.
 
 # Second Phase:
 1- Gathering 1000+ pic
+
 2- Use GANs Arch
 
