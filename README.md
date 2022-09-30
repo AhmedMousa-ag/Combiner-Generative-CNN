@@ -3,7 +3,7 @@ Using GANS architecture to solve how broken object did look like before break. "
 
 #This project is still in gathering data phase 
 
-#First Phase:
+# First Phase:
 Gathering 100 images of data at first with some data augmentation, then continue cyclic infrastructure using data versioning to keep track of our data.
 
 Tried to extract feature in this dataset by putting x images and predicting same x images, and wasn't good enough:
@@ -20,5 +20,9 @@ After training on X and Y, results were:
 
 ![output_2](https://user-images.githubusercontent.com/59775002/193263823-887f4751-12c8-4fed-9144-eae954fcb3aa.png)
 
-So will continue gathering data and move with GANs archetecture. 
+So will continue gathering data and move with GANs arch.
+
+# Second Phase:
+1- Gathering 1000+ pic
+2- Use GANs Arch
 
