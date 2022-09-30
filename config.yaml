@@ -8,11 +8,11 @@ data_versions:
 
 
 train_config:
-  loss: 'msa'
+  loss: 'mse'
   metric: 'mae'
   epochs: 500 # I will make it long enough and we have early stop
   earl_stop: 50
-  lr_reduce_pati: 10
+  lr_reduce_pati: 5 # When it was 10, it was working but not in all casses
 
 mlflow:
   track_uri: "http://127.0.0.1:5000"
