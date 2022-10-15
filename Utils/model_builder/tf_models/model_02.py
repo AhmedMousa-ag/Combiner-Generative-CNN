@@ -8,12 +8,10 @@ from keras.activations import tanh
 from keras.models import Sequential
 
 
-class __model(tf_builder):
+class __model():
     """This model is a simple autoencoder as our base model"""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._build_model()
         self.channels = 3
         self.strides = 1
         self.padding = "same"
@@ -24,7 +22,6 @@ class __model(tf_builder):
     def _build_model(self):
         self.generator = self.generator()
         self.discrimnator = self.discrimnator()
-        self._compile()
 
     def discrimnator(self):
         # C64-C128-C256-C512
@@ -43,13 +40,13 @@ class __model(tf_builder):
         return model
 
     def en_block(self, input, cnn):
-      self.en_num += 1
-      x = Conv2D(cnn, self.channels, strides=self.strides,
+        self.en_num += 1
+        x = Conv2D(cnn, self.channels, strides=self.strides,
                  padding=self.padding, name=f"Encoder_Conv_{cnn}_{self.en_num}")(input)
-      x = BatchNormalizationV2(
-          name=f"Encoder_BatchNorm_{cnn}_{self.en_num}")(x)
-      x = LeakyReLU(0.2, name=f"Encoder_LRelu_{cnn}_{self.en_num}")(x)
-      return x
+        x = BatchNormalizationV2(
+            name=f"Encoder_BatchNorm_{cnn}_{self.en_num}")(x)
+        x = LeakyReLU(0.2, name=f"Encoder_LRelu_{cnn}_{self.en_num}")(x)
+        return x
 
     def de_block(self, input, cnn, dropout=True, activation=None):
         # CD512-CD512-CD512-C512-C256-C128-C64
