@@ -47,12 +47,13 @@ class pix2pix():
         model = keras.Model(inputs =(input_x,input_y),outputs =output, name="Discriminator_model")
         return model
 
-    def en_block(self, input, cnn):
+    def en_block(self, input, cnn,batch_norm=True):
         self.en_num += 1
         x = Conv2D(cnn, self.size, strides=self.strides,
                  padding=self.padding,kernel_initializer=self.initializer, name=f"Encoder_Conv_{cnn}_{self.en_num}")(input)
-        x = BatchNormalizationV2(
-            name=f"Encoder_BatchNorm_{cnn}_{self.en_num}")(x)
+        if batch_norm:
+            x = BatchNormalizationV2(
+                name=f"Encoder_BatchNorm_{cnn}_{self.en_num}")(x)
         x = LeakyReLU(0.2, name=f"Encoder_LRelu_{cnn}_{self.en_num}")(x)
         return x
 
@@ -83,8 +84,12 @@ class pix2pix():
         x = inputs
         skips = []
         for i,cnn in enumerate(en_cnn_list):
-          x = self.en_block(x,cnn)
-          skips.append(x)
+            if i ==0:
+                x = self.en_block(x,cnn,batch_norm=False)
+            else:
+                x = self.en_block(x,cnn)
+            skips.append(x)
+
         skips = reversed(skips[:-1])
         i=0
         for cnn, skip in zip(de_cnn_list,skips):
@@ -154,7 +159,7 @@ class pix2pix():
         return disc_loss,gen_total_loss
     
     def fit(self,dataset,epochs,l1_lambda=100,save_check_point=False):
-
+        #TODO make a reduce learning rate function or callback
         generator = self.get_generator()
         discriminator = self.get_discriminator()
 
