@@ -10,7 +10,7 @@ import os
 class pix2pix():
     """This model is a simple autoencoder as our base model"""
     def __init__(self,learning_rate=0.0002):
-        self.channels = 3
+        self.output_channel = 3
         self.size = 4
         self.strides = 2
         self.padding = "same"
@@ -18,6 +18,7 @@ class pix2pix():
         self.de_num = 0
         self.en_num = 1
         self.learning_rate = learning_rate
+        self.initializer = tf.random_normal_initializer(0., 0.02)
         self._build_model()
 
     def _build_model(self):
@@ -32,24 +33,24 @@ class pix2pix():
         input_y = Input(shape=[256, 256, 3], dtype=tf.float64,name="Input_Y")
         x = Concatenate()([input_x,input_y])
 
-        x = Conv2D(64, self.channels*2, strides=2,
-                         padding=self.padding)(x)
+        x = Conv2D(64, self.size*2, strides=2,
+                         padding=self.padding,kernel_initializer=self.initializer)(x)
         x = LeakyReLU(0.2)(x)
 
         for cnn in cnn_list:
-            x = Conv2D(cnn, self.channels, strides=self.strides,
-                             padding=self.padding)(x)
+            x = Conv2D(cnn, self.size, strides=self.strides,
+                             padding=self.padding,kernel_initializer=self.initializer)(x)
             x = BatchNormalizationV2()(x)
             x = LeakyReLU(0.2)(x)
-        output = Conv2D(1, self.channels, strides=self.strides,
-                         padding=self.padding, activation="sigmoid")(x)
+        output = Conv2D(1, self.size, strides=self.strides,
+                         padding=self.padding,kernel_initializer=self.initializer, activation="sigmoid")(x)
         model = keras.Model(inputs =(input_x,input_y),outputs =output, name="Discriminator_model")
         return model
 
     def en_block(self, input, cnn):
         self.en_num += 1
-        x = Conv2D(cnn, self.channels, strides=self.strides,
-                 padding=self.padding, name=f"Encoder_Conv_{cnn}_{self.en_num}")(input)
+        x = Conv2D(cnn, self.size, strides=self.strides,
+                 padding=self.padding,kernel_initializer=self.initializer, name=f"Encoder_Conv_{cnn}_{self.en_num}")(input)
         x = BatchNormalizationV2(
             name=f"Encoder_BatchNorm_{cnn}_{self.en_num}")(x)
         x = LeakyReLU(0.2, name=f"Encoder_LRelu_{cnn}_{self.en_num}")(x)
@@ -58,8 +59,8 @@ class pix2pix():
     def de_block(self, input, cnn, dropout=True, activation=None):
         # CD512-CD512-CD512-C512-C256-C128-C64
       self.de_num += 1
-      x = Conv2DTranspose(cnn, self.channels, strides=self.strides,
-                          padding=self.padding, name=f"Decoder_Conv_{cnn}_{self.de_num}")(input)
+      x = Conv2DTranspose(cnn, self.size, strides=self.strides,
+                          padding=self.padding,kernel_initializer=self.initializer, name=f"Decoder_Conv_{cnn}_{self.de_num}")(input)
       if activation:    # Last layer is tanh activation,
         # if we call any activation it will call this layer which is lambda layer for tanh activation
         # And doesn't have Dropout layer
@@ -85,12 +86,16 @@ class pix2pix():
           x = self.en_block(x,cnn)
           skips.append(x)
         skips = reversed(skips[:-1])
-
+        i=0
         for cnn, skip in zip(de_cnn_list,skips):
-          x = self.de_block(x,cnn)
-          x = Concatenate()([x,skip])
-        
-        output= self.de_block(x,self.channels)
+            if i <=2:
+                x = self.de_block(x,cnn,dropout=True)
+                x = Concatenate()([x,skip])
+            else:
+                x = self.de_block(x,cnn)
+                x = Concatenate()([x,skip])
+            i+=1
+        output= self.de_block(x,self.output_channel,activation="tanh")
         
         model = keras.Model(inputs=inputs, outputs=output,name="Generator_model")
         return model
@@ -159,7 +164,7 @@ class pix2pix():
 
         disc_optim = Adam(learning_rate=self.learning_rate,beta_1=0.5,beta_2=0.999)
         gen_optim = Adam(learning_rate=self.learning_rate,beta_1=0.5,beta_2=0.999)
-        if save_check_point:
+        if save_check_point: #TODO make sure it works fine
             self.check_point(self,generator_optimizer=gen_optim,discriminator_optimizer=disc_optim,
             generator=generator,discriminator=discriminator)
 
