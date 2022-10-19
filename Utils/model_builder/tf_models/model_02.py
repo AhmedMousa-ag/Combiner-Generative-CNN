@@ -162,7 +162,7 @@ class pix2pix():
         self.save_discriminator(path=path,h5=h5)
         self.save_generator(path=path,h5=h5)
 
-    def save_generator(self,path:str,h5=False):
+    def load_generator(self,path:str,h5=False):
         gen_path = "generator" if not h5 else "generator.h5"
         gen_save_path  = os.path.join(path,gen_path)
         self.generator = tf.keras.models.load_model(gen_save_path)
