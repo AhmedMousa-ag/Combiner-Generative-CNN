@@ -1,3 +1,4 @@
+from tkinter import image_types
 import tensorflow as tf
 from Utils.config import load_config_file
 import os
@@ -29,16 +30,30 @@ def produce_x_y_paths(data_version):
     for folder in os.listdir(os.path.join(data_path, data_version))[:-1]: # -1 because we want to exclude test folder
         path = os.path.join(data_path, data_version, folder)
         origin_path = os.path.join(path, "origin")
-        origin_path = [path for path in glob.glob(origin_path+"/*.jpeg")][0] #It's one image so no problem
-        for i,image_path in enumerate(glob.glob(path+"/*.jpeg")):
+        origin_paths = []
+        origin_types = (origin_path+"/*.jpeg",origin_path+"/*.jpg")
+
+        for type in origin_types:
+            for pat in glob.glob(type):
+                origin_paths.append(pat)
+        origin_path = origin_paths[0] #It's one image so no problem
+
+        image_types = (path+"/*.jpeg",path+"/*.jpg")
+        images_paths = []
+        for type in image_types:
+            for pat in glob.glob(type):
+                images_paths.append(pat)
+        
+        for image_path in images_paths:
             x_data.append(image_path)
             y_data.append(origin_path)
+
     x_data = tf.data.Dataset.from_tensor_slices(x_data)
     y_data = tf.data.Dataset.from_tensor_slices(y_data)
     dataset = tf.data.Dataset.zip((x_data,y_data))
     return dataset
 
-def load_x_y_images(data_version, add_augmentation=True,scale=False,resize=True):
+def load_x_y_images(data_version, add_augmentation=False,scale=False):
     dataset = produce_x_y_paths(data_version=data_version)
     dataset = dataset.map(load_images)
     print(dataset)
