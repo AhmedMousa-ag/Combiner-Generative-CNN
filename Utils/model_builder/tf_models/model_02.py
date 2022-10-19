@@ -146,12 +146,12 @@ class pix2pix():
 
     def save_generator(self,path:str,h5=False):
         gen_path = "generator" if not h5 else "generator.h5"
-        save_path  = os.join(path,gen_path)
+        save_path  = os.path.join(path,gen_path)
         self.generator.save(save_path)
 
     def save_discriminator(self,path:str,h5=False):
         dis_path = "discriminator" if not h5 else "discriminator.h5"
-        save_path  = os.join(path,dis_path)
+        save_path  = os.path.join(path,dis_path)
         self.discrimnator.save(save_path)
 
     def save_models(self,path:str,h5=False):
@@ -160,12 +160,12 @@ class pix2pix():
 
     def save_generator(self,path:str,h5=False):
         gen_path = "generator" if not h5 else "generator.h5"
-        gen_save_path  = os.join(path,gen_path)
+        gen_save_path  = os.path.join(path,gen_path)
         self.generator = tf.keras.models.load_model(gen_save_path)
 
     def load_discrimnator(self,path:str,h5=False):
         dis_path = "discriminator" if not h5 else "discriminator.h5"
-        dis_save_path  = os.join(path,dis_path)
+        dis_save_path  = os.path.join(path,dis_path)
         self.discrimnator =  tf.keras.models.load_model(dis_save_path)
 
     def load_models(self,path:str,h5=False):
