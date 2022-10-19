@@ -147,16 +147,20 @@ class pix2pix():
     def save_generator(self,path:str,h5=False):
         gen_path = "generator" if not h5 else "generator.h5"
         save_path  = os.path.join(path,gen_path)
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
         self.generator.save(save_path)
 
     def save_discriminator(self,path:str,h5=False):
         dis_path = "discriminator" if not h5 else "discriminator.h5"
         save_path  = os.path.join(path,dis_path)
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
         self.discrimnator.save(save_path)
 
     def save_models(self,path:str,h5=False):
         self.save_discriminator(path=path,h5=h5)
-        self.save_discriminator(path=path,h5=h5)
+        self.save_generator(path=path,h5=h5)
 
     def save_generator(self,path:str,h5=False):
         gen_path = "generator" if not h5 else "generator.h5"
