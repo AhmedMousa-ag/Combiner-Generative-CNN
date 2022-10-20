@@ -2,6 +2,11 @@
 Using GANS architecture to solve how broken object did look like before break. "Use cases Archaeology".
 
 #This project is still in gathering data phase 
+# Pix2Pix:
+Model_2 in models builder represents pix2pix architecture and it doesn't look promsing, so will try with Difusion models
+
+# Data:
+So far gathered data of 600 images to 9 objects.
 
 # First Phase:
 Gathering 100 images of data at first with some data augmentation, then continue cyclic infrastructure using data versioning to keep track of our data.
