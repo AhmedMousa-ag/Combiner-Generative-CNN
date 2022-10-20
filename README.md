@@ -22,10 +22,6 @@ Tried to extract feature in this dataset by putting x images and predicting same
 ![image](https://user-images.githubusercontent.com/59775002/196940869-293778f4-8155-4dc7-9994-58ca26ac35c6.png)
 
  Predicted Image "AUTOENCODER":
- 
-![output](https://user-images.githubusercontent.com/59775002/193263530-f41eb919-4ad8-45bb-80d7-5d2098ceb4d7.png)
-
-After training on X and Y, results were:
 
 ![output_2](https://user-images.githubusercontent.com/59775002/193263823-887f4751-12c8-4fed-9144-eae954fcb3aa.png)
 
