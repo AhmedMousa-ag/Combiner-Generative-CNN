@@ -221,7 +221,7 @@ class pix2pix():
                                                     discriminator.trainable_variables))
         return disc_loss, gen_total_loss
 
-    def fit(self, dataset, epochs, l1_lambda=100, save_models=True,save_interval=100,test_image: str =None,generate_image_interval=50):
+    def fit(self, dataset, epochs, l1_lambda=100, save_models=True,save_interval=100,test_image=False,generate_image_interval=50):
         #TODO make a reduce learning rate function or callback
         generator = self.get_generator()
         discriminator = self.get_discriminator()
@@ -249,7 +249,7 @@ class pix2pix():
             if save_models:
                 if epoch%save_interval == 0:
                     self.save_models(path=f'{time_stamp}training_saved')
-            if test_image:
+            if not isinstance(test_image,bool):
                 if epoch % generate_image_interval == 0:
                     display_one_image(generator(test_image),"Generated Image") #To see how it goes every 50 epochs
 
