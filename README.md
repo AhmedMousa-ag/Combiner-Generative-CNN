@@ -1,7 +1,8 @@
 # Combiner-GANS
 Using GANS architecture to solve how broken object did look like before break. "Use cases Archaeology".
 
-#This project is still in gathering data phase 
+# This project is still in progress.... 
+
 # Pix2Pix:
 Model_2 in models builder represents pix2pix architecture and it doesn't look promsing, so will try with Diffusion models
 
