@@ -33,4 +33,4 @@ def reduce_all_images(data_version):
             reduce_size(image_path)
 
 
-reduce_all_images("3-10-22")
+#reduce_all_images("3-10-22")
