@@ -1,18 +1,13 @@
 # Combiner-GANS
-Using GANS architecture to solve how broken object did look like before break. "Use cases Archaeology".
+Using GANS architecture to solve how broken objects did look like before break. "Use cases Archaeology".
 
 # Pix2Pix:
 Model_2 in models builder folder represents pix2pix architecture which gave a good results as explained below
 
 # Data:
-Gathered data of around 600 images belonging to 9 objects "Carton objects are easy to find and ripe".
+Gathered data of around 600 images belonging to 9 objects "Carton objects are easy to find and tear".
 
 # Results So Far:
-
-
- Test Image: 
- 
-![image](https://user-images.githubusercontent.com/59775002/197363251-ed041862-b1d1-41b3-bed5-70bb588accae.png)
  
  # Predicted Image "Pix2pix"("300 epochs", "Data_version: 3-10-22"):
 
