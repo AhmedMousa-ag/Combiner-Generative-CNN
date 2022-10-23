@@ -14,7 +14,8 @@ from datetime import datetime
 
 class dec_lt_per_epoch(LearningRateSchedule):
     "In case we needed to decrease learning rate"
-    def __init__(self, initial_learning_rate,decay_at_steps: list,decay=0.0001):
+
+    def __init__(self, initial_learning_rate, decay_at_steps: list, decay=0.0001):
         self.initial_learning_rate = initial_learning_rate
         self.curr_lr = self.initial_learning_rate
         self.decay = decay
@@ -22,14 +23,16 @@ class dec_lt_per_epoch(LearningRateSchedule):
 
     def __call__(self, step):
         if step == self.decay_at_steps[0]:
-            if len(self.decay_at_step)>1:
+            if len(self.decay_at_step) > 1:
                 self.decay_at_step.pop(0)
             self.curr_lr -= self.decay
         return self.curr_lr
 
+
 class pix2pix():
     """This model is a simple autoencoder as our base model"""
-    def __init__(self, learning_rate=0.0002,load_models=False,load_path: str = None,load_check_point=False,new_checkpoint_path: str=None):
+
+    def __init__(self, learning_rate=0.0002, load_models=False, load_path: str = None, load_check_point=False, new_checkpoint_path: str = None):
         self.output_channel = 3
         self.size = 4
         self.strides = 2
@@ -43,8 +46,9 @@ class pix2pix():
             self._build_model()
         else:
             self.load_models(load_path)
-        self.history = {"generator_loss":[],
-                        "discriminator_loss":[]}
+        self.history = {"generator_loss": [],
+                        "discriminator_loss": []}
+
     def _build_model(self):
         #TODO check initilaizers #initializer = tf.random_normal_initializer(0., 0.02) , (kernel_initializer=initializer, use_bias=False)
         self.generator = self.generator()
@@ -130,15 +134,18 @@ class pix2pix():
                             name="Generator_model")
         return model
 
-    def create_check_point(self,path ,generator_opt, discriminator_opt, generator, discriminator):
-        checkpoint_dir = os.path.join(path,'training_checkpoints')
+    def create_check_point(self, path, generator_opt, discriminator_opt, generator, discriminator):
+        checkpoint_dir = os.path.join(path, 'training_checkpoints')
         self.checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
         self.checkpoint = tf.train.Checkpoint(generator_optimizer=generator_opt,
                                               discriminator_optimizer=discriminator_opt,
                                               generator=generator,
                                               discriminator=discriminator)
-    def restore_checkpoint(self,path):
-        self.checkpoint = self.checkpoint.restore(tf.train.latest_checkpoint(path))
+
+    def restore_checkpoint(self, path):
+        self.checkpoint = self.checkpoint.restore(
+            tf.train.latest_checkpoint(path))
+        print("Restored checkpoints")
 
     def get_generator(self):
         return self.generator
@@ -146,38 +153,37 @@ class pix2pix():
     def get_discriminator(self):
         return self.discrimnator
 
-    def save_generator(self,path:str,h5=False):
+    def save_generator(self, path: str, h5=False):
         gen_path = "generator" if not h5 else "generator.h5"
-        save_path  = os.path.join(path,gen_path)
+        save_path = os.path.join(path, gen_path)
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         self.generator.save(save_path)
 
-    def save_discriminator(self,path:str,h5=False):
+    def save_discriminator(self, path: str, h5=False):
         dis_path = "discriminator" if not h5 else "discriminator.h5"
-        save_path  = os.path.join(path,dis_path)
+        save_path = os.path.join(path, dis_path)
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         self.discrimnator.save(save_path)
 
-    def save_models(self,path:str,h5=False):
-        self.save_discriminator(path=path,h5=h5)
-        self.save_generator(path=path,h5=h5)
+    def save_models(self, path: str, h5=False):
+        self.save_discriminator(path=path, h5=h5)
+        self.save_generator(path=path, h5=h5)
 
-    def load_generator(self,path:str,h5=False):
+    def load_generator(self, path: str, h5=False):
         gen_path = "generator" if not h5 else "generator.h5"
-        gen_save_path  = os.path.join(path,gen_path)
+        gen_save_path = os.path.join(path, gen_path)
         self.generator = tf.keras.models.load_model(gen_save_path)
 
-    def load_discrimnator(self,path:str,h5=False):
+    def load_discrimnator(self, path: str, h5=False):
         dis_path = "discriminator" if not h5 else "discriminator.h5"
-        dis_save_path  = os.path.join(path,dis_path)
-        self.discrimnator =  tf.keras.models.load_model(dis_save_path)
+        dis_save_path = os.path.join(path, dis_path)
+        self.discrimnator = tf.keras.models.load_model(dis_save_path)
 
-    def load_models(self,path:str,h5=False):
-        self.load_discrimnator(path=path,h5=h5)
-        self.load_generator(path=path,h5=h5)
-        
+    def load_models(self, path: str, h5=False):
+        self.load_discrimnator(path=path, h5=h5)
+        self.load_generator(path=path, h5=h5)
 
     def discriminator_loss(self, disc_real_pred, disc_generated_pred):
         real_loss = self.bce_loss(tf.ones_like(disc_real_pred), disc_real_pred)
@@ -185,7 +191,8 @@ class pix2pix():
         generated_loss = self.bce_loss(tf.zeros_like(
             disc_generated_pred), disc_generated_pred)
         #Divide by 2 as we want it to learn slower than the generator
-        total_disc_loss = (real_loss + generated_loss)/2  #TODO remove it if it doesn't work
+        total_disc_loss = (real_loss + generated_loss) / \
+            2  # TODO remove it if it doesn't work
         return total_disc_loss
 
     def generator_loss(self, disc_generated_output, gen_output, target):
@@ -198,7 +205,7 @@ class pix2pix():
 
         return total_gen_loss, gan_loss, l1_loss
 
-    def add_losses(self,gen_loss,disc_loss):
+    def add_losses(self, gen_loss, disc_loss):
         self.history["generator_loss"].append(gen_loss)
         self.history["discriminator_loss"].append(disc_loss)
 
@@ -228,7 +235,7 @@ class pix2pix():
 # ----------------------------------------------------------------------------------------------
 
     def fit(self, dataset, epochs, l1_lambda=100, save_models=True,
-            save_interval=100,test_image=False,generate_image_interval=50, load_check_point=False,load_path: str = None):
+            save_interval=100, test_image=False, generate_image_interval=50, load_check_point=False, load_path: str = None):
         #TODO make a reduce learning rate function or callback
         generator = self.get_generator()
         discriminator = self.get_discriminator()
@@ -237,23 +244,23 @@ class pix2pix():
         self.L1_loss = MeanAbsoluteError()
         self.l1_lambda = l1_lambda
 
-        disc_optim = Adam(learning_rate=self.learning_rate,#0.000001,
+        disc_optim = Adam(learning_rate=self.learning_rate,  # 0.000001,
                           beta_1=0.5, beta_2=0.999)
         gen_optim = Adam(learning_rate=self.learning_rate,
                          beta_1=0.5, beta_2=0.999)
-        
-        if save_models:
+
+        if save_models or load_check_point:
             time_stamp = datetime.timestamp(datetime.now())
             self.create_check_point(path=f'{time_stamp}_{epochs}_checkpoints',
-                generator_opt =gen_optim,discriminator_opt=disc_optim,
-                generator=generator,discriminator=discriminator)
+                                    generator_opt=gen_optim, discriminator_opt=disc_optim,
+                                    generator=generator, discriminator=discriminator)
 
         if load_check_point:
             self.create_check_point(path=f'{time_stamp}_{epochs}_checkpoints',
-                generator_opt =gen_optim,discriminator_opt=disc_optim,
-                generator=generator,discriminator=discriminator)
+                                    generator_opt=gen_optim, discriminator_opt=disc_optim,
+                                    generator=generator, discriminator=discriminator)
             self.restore_checkpoint(load_path)
-            
+
         for epoch in range(epochs):
             for i, (x_batch_train, y_batch_train) in enumerate(dataset):
                 dis_loss_val, gen_loss_val = self.step(input_image=x_batch_train, target=y_batch_train,
@@ -262,16 +269,20 @@ class pix2pix():
                 print_results(epoch=epoch, step=i,
                               dis_loss=dis_loss_val, gen_loss=gen_loss_val)
 
-            self.add_losses(gen_loss_val,dis_loss_val)
-            
+            self.add_losses(gen_loss_val, dis_loss_val)
+
             if save_models:
-                if epoch%save_interval == 0:
-                    self.save_models(path=f'{time_stamp}_{epochs}_training_saved')
+                if epoch % save_interval == 0:
+                    self.save_models(
+                        path=f'{time_stamp}_{epochs}_training_saved')
                     self.checkpoint.save(file_prefix=self.checkpoint_prefix)
-            if not isinstance(test_image,bool):
+
+            if not isinstance(test_image, bool):
                 if epoch % generate_image_interval == 0:
-                    display_one_image(generator(test_image),"Generated Image") #To see how it goes every 50 epochs
+                    # To see how it goes every 50 epochs
+                    display_one_image(generator(test_image), "Generated Image")
         return self.history
+
 
 def print_results(epoch, step, dis_loss, gen_loss, p_every_num_step=10):
     if step % p_every_num_step == 0:
