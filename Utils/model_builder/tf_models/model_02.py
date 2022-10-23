@@ -29,7 +29,7 @@ class dec_lt_per_epoch(LearningRateSchedule):
 
 class pix2pix():
     """This model is a simple autoencoder as our base model"""
-    def __init__(self, learning_rate=0.0002,load_models=False,load_path: str = None):
+    def __init__(self, learning_rate=0.0002,load_models=False,load_path: str = None,load_check_point=False,new_checkpoint_path: str=None):
         self.output_channel = 3
         self.size = 4
         self.strides = 2
@@ -137,6 +137,8 @@ class pix2pix():
                                               discriminator_optimizer=discriminator_opt,
                                               generator=generator,
                                               discriminator=discriminator)
+    def restore_checkpoint(self,path):
+        self.checkpoint = self.checkpoint.restore(tf.train.latest_checkpoint(path))
 
     def get_generator(self):
         return self.generator
@@ -223,9 +225,10 @@ class pix2pix():
         discriminator_optimizer.apply_gradients(zip(discriminator_gradients,
                                                     discriminator.trainable_variables))
         return disc_loss, gen_total_loss
+# ----------------------------------------------------------------------------------------------
 
     def fit(self, dataset, epochs, l1_lambda=100, save_models=True,
-            save_interval=100,test_image=False,generate_image_interval=50):
+            save_interval=100,test_image=False,generate_image_interval=50, load_check_point=False,load_path: str = None):
         #TODO make a reduce learning rate function or callback
         generator = self.get_generator()
         discriminator = self.get_discriminator()
@@ -245,6 +248,12 @@ class pix2pix():
                 generator_opt =gen_optim,discriminator_opt=disc_optim,
                 generator=generator,discriminator=discriminator)
 
+        if load_check_point:
+            self.create_check_point(path=f'{time_stamp}_{epochs}_checkpoints',
+                generator_opt =gen_optim,discriminator_opt=disc_optim,
+                generator=generator,discriminator=discriminator)
+            self.restore_checkpoint(load_path)
+            
         for epoch in range(epochs):
             for i, (x_batch_train, y_batch_train) in enumerate(dataset):
                 dis_loss_val, gen_loss_val = self.step(input_image=x_batch_train, target=y_batch_train,
