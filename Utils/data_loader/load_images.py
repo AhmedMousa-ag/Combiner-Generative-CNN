@@ -110,5 +110,6 @@ def load_x_images(data_version, image_size=pic_shape[:-1], add_augmentation=True
 def load_test_image(img_path, pic_shape):
     img = tf.keras.utils.load_img(img_path, target_size=pic_shape)
     img = tf.keras.utils.img_to_array(img)
+    img = img/255.
     img = tf.expand_dims(img, 0)
     return img

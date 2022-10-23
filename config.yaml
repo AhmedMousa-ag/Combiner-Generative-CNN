@@ -13,7 +13,7 @@ train_config:
   batch_size: 12
   loss: 'mse'
   metric: 'mae'
-  epochs: 500
+  epochs: 300
   earl_stop: 50
   lr_reduce_pati: 8 # When it was 10, it was working but not in all casses
   pic_shape: [256,256,3]
